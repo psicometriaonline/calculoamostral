@@ -1,6 +1,21 @@
 // Configuração lida das variáveis de ambiente (definidas no Coolify).
 const env = process.env;
 
+/** Remove espaços, quebras de linha e aspas em volta (comuns ao colar no painel). */
+function clean(v: string | undefined): string {
+  let t = (v ?? '').trim();
+  while (t.length >= 2 && ((t[0] === '"' && t.endsWith('"')) || (t[0] === "'" && t.endsWith("'")))) t = t.slice(1, -1).trim();
+  return t;
+}
+
+/** Descrição segura de um valor de conexão, sem a senha, para o log. */
+export function describeDbUrl(v: string): string {
+  if (!v) return 'vazia';
+  const m = /^([a-z]+:\/\/)?([^:@\s]*)(:[^@]*)?@([^/:\s]+)(:\d+)?(\/\S*)?$/.exec(v);
+  if (!m) return `não é um endereço postgres:// (começa com "${v.slice(0, 8).replace(/[^A-Za-z0-9:/._-]/g, '?')}…", ${v.length} caracteres)`;
+  return `${m[1] ?? '(sem protocolo)'}${m[2]}:***@${m[4]}${m[5] ?? ''}${m[6] ?? ''}`;
+}
+
 function bool(v: string | undefined, def: boolean) {
   if (v === undefined || v === '') return def;
   return ['1', 'true', 'yes', 'sim'].includes(v.toLowerCase());
@@ -13,12 +28,12 @@ function int(v: string | undefined, def: number) {
 export const config = {
   port: int(env.PORT, 3000),
   appUrl: (env.APP_URL || 'http://localhost:3000').replace(/\/+$/, ''),
-  databaseUrl: env.DATABASE_URL || '',
-  sessionSecret: env.SESSION_SECRET || '',
+  databaseUrl: clean(env.DATABASE_URL),
+  sessionSecret: clean(env.SESSION_SECRET),
   isProduction: env.NODE_ENV === 'production',
 
   // E-mail (Resend)
-  resendApiKey: env.RESEND_API_KEY || '',
+  resendApiKey: clean(env.RESEND_API_KEY),
   mailFrom: env.MAIL_FROM || 'Psicometria Online <codigo@acesso.calculoamostral.com.br>',
   mailReplyTo: env.MAIL_REPLY_TO || '',
   mailPerSecond: int(env.MAIL_PER_SECOND, 2),
@@ -54,7 +69,7 @@ export const config = {
 
 export function assertConfig() {
   const missing: string[] = [];
-  if (!/^postgres(ql)?:\/\/[^@\s]+@[^\s/]+/.test(config.databaseUrl)) missing.push('DATABASE_URL (precisa começar com postgres://usuário:senha@host)');
+  if (!/^postgres(ql)?:\/\/[^@\s]+@[^\s/]+/.test(config.databaseUrl)) missing.push(`DATABASE_URL (precisa começar com postgres://usuário:senha@host; recebido: ${describeDbUrl(config.databaseUrl)})`);
   if (!config.sessionSecret || config.sessionSecret.length < 32) missing.push('SESSION_SECRET (mínimo 32 caracteres)');
   if (config.isProduction) {
     if (!config.resendApiKey.startsWith('re_')) missing.push('RESEND_API_KEY (começa com re_)');

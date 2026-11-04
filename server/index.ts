@@ -2,7 +2,7 @@ import express, { type Request, type Response, type NextFunction } from 'express
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { config, assertConfig } from './config';
+import { config, assertConfig, describeDbUrl } from './config';
 import { pool, migrate } from './db';
 import { securityHeaders, sameOrigin } from './security';
 import { loadSession, registerAuthRoutes, startAuthJanitor, type AuthedRequest } from './auth';
@@ -75,6 +75,7 @@ export function createApp() {
 
 async function main() {
   assertConfig();
+  console.log(`[db] conectando em ${describeDbUrl(config.databaseUrl)}`);
   await migrate();
   if (process.argv.includes('--migrate-only')) {
     await pool.end();

@@ -10,6 +10,8 @@ COPY . .
 RUN npm run build && npm prune --omit=dev --legacy-peer-deps
 
 FROM node:20-bookworm-slim
+# wget para o healthcheck do painel do Coolify (ele chama curl ou wget dentro do contêiner)
+RUN apt-get update && apt-get install -y --no-install-recommends wget ca-certificates && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production PORT=3000
 WORKDIR /app
 COPY --from=build --chown=node:node /app/package.json ./
