@@ -1,9 +1,12 @@
 # Site calculoamostral.com.br — build e execução
 FROM node:20-bookworm-slim AS build
 WORKDIR /app
+# O build precisa das devDependencies (vite, esbuild). O Coolify pode injetar
+# NODE_ENV=production como variável de build, então ela é fixada aqui.
+ENV NODE_ENV=development
 COPY package.json package-lock.json ./
 # embedded-postgres é opcional (só para testes) e fica fora da imagem
-RUN npm ci --legacy-peer-deps --omit=optional
+RUN npm ci --legacy-peer-deps --omit=optional --include=dev
 COPY . .
 RUN npm run build && npm prune --omit=dev --omit=optional --legacy-peer-deps
 
