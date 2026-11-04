@@ -54,10 +54,10 @@ export const config = {
 
 export function assertConfig() {
   const missing: string[] = [];
-  if (!config.databaseUrl) missing.push('DATABASE_URL');
+  if (!/^postgres(ql)?:\/\/[^@\s]+@[^\s/]+/.test(config.databaseUrl)) missing.push('DATABASE_URL (precisa começar com postgres://usuário:senha@host)');
   if (!config.sessionSecret || config.sessionSecret.length < 32) missing.push('SESSION_SECRET (mínimo 32 caracteres)');
   if (config.isProduction) {
-    if (!config.resendApiKey) missing.push('RESEND_API_KEY');
+    if (!config.resendApiKey.startsWith('re_')) missing.push('RESEND_API_KEY (começa com re_)');
     if (!config.appUrl.startsWith('https://')) missing.push('APP_URL (https://…)');
   }
   if (missing.length) {
