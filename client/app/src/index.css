@@ -1,0 +1,706 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* iOS-safe viewport: use min-height instead of fixed height to avoid address bar issues */
+html,
+body {
+  min-height: 100vh;
+  /* Support iOS safe areas (notch, bottom bar) */
+  min-height: -webkit-fill-available;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* iOS Fix - Add extra bottom padding to all scrollable areas ONLY on mobile */
+/* This prevents iPhone Chrome's bottom bar from hiding content */
+/* Exclude elements that have their own padding management:
+   - .mobile-chat-messages-padding: chat containers with custom padding
+   - .no-mobile-padding: pages that don't need extra bottom padding
+   - Radix UI popovers/selects which render in portals */
+@media (max-width: 768px) {
+  .overflow-y-auto:not(.no-mobile-padding):not(.mobile-chat-messages-padding):not([data-radix-popper-content-wrapper] *):not([data-radix-select-content]),
+  .overflow-auto:not(.no-mobile-padding):not(.mobile-chat-messages-padding):not([data-radix-popper-content-wrapper] *):not([data-radix-select-content]) {
+    padding-bottom: 6rem !important;
+  }
+}
+
+/* iOS Safe Area Header - Respect notch/safe areas */
+.safe-area-header {
+  top: env(safe-area-inset-top, 0) !important;
+  /* Add safe-area-inset PLUS extra padding for comfortable spacing */
+  padding-top: calc(env(safe-area-inset-top, 0) + 0.5rem);
+  /* Force new stacking context and ensure visibility */
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  position: sticky !important;
+  z-index: 50 !important;
+}
+
+/* iOS Safe Area Bottom - For fixed bottom bars */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Fixed bottom action bar - height is bar content + safe-area */
+.action-bar-fixed {
+  --action-bar-content-height: 60px;
+  height: calc(var(--action-bar-content-height) + env(safe-area-inset-bottom, 0));
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Matching bottom padding for content when using fixed action bar */
+.action-bar-padding {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0) + 12px);
+}
+
+/* ============================================
+   MOBILE CHAT INPUT - Fixed at bottom
+   Only applies on mobile (max-width: 767px)
+   ============================================ */
+@media (max-width: 767px) {
+  /* Chat container uses dynamic viewport height on mobile */
+  .mobile-chat-container {
+    height: 100dvh;
+    height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Fixed input area at bottom - stays above keyboard */
+  .mobile-chat-input-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: hsl(var(--background));
+    border-top: 1px solid hsl(var(--border));
+    padding: 0.5rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
+    z-index: 50;
+  }
+
+  /* Messages area for chat - padding is controlled via inline styles in React */
+  /* This class is used to opt-out of the global mobile padding rule */
+  .mobile-chat-messages-padding {
+    padding-bottom: 0 !important;
+  }
+}
+
+/* LIGHT MODE */
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+
+  /* Automatic computation of border around primary / danger buttons */
+  --opaque-button-border-intensity: -8; /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  --background: 0 0% 100%;
+
+  --foreground: 220 15% 20%;
+
+  --border: 220 15% 90%;
+
+  --card: 220 15% 98%;
+
+  --card-foreground: 220 15% 20%;
+
+  --card-border: 220 15% 92%;
+
+  --sidebar: 220 15% 95%;
+
+  --sidebar-foreground: 220 15% 20%;
+
+  --sidebar-border: 220 15% 88%;
+
+  --sidebar-primary: 220 85% 25%;
+
+  --sidebar-primary-foreground: 220 85% 98%;
+
+  --sidebar-accent: 220 15% 88%;
+
+  --sidebar-accent-foreground: 220 15% 20%;
+
+  --sidebar-ring: 220 85% 25%;
+
+  --popover: 220 15% 96%;
+
+  --popover-foreground: 220 15% 20%;
+
+  --popover-border: 220 15% 86%;
+
+  --primary: 220 85% 25%;
+
+  --primary-foreground: 220 85% 98%;
+
+  --secondary: 220 15% 90%;
+
+  --secondary-foreground: 220 15% 20%;
+
+  --muted: 220 15% 93%;
+
+  --muted-foreground: 220 15% 45%;
+
+  --accent: 142 70% 45%;
+
+  --accent-foreground: 142 70% 98%;
+
+  --destructive: 0 85% 35%;
+
+  --destructive-foreground: 0 85% 98%;
+
+  --input: 220 15% 80%;
+  --ring: 220 85% 25%;
+  --chart-1: 220 85% 25%;
+  --chart-2: 142 70% 35%;
+  --chart-3: 280 70% 35%;
+  --chart-4: 40 85% 35%;
+  --chart-5: 190 70% 35%;
+
+  --font-sans: Open Sans, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: .5rem; /* 8px */
+  --shadow-2xs: 0px 2px 0px 0px hsl(220 15% 20% / 0.05);
+  --shadow-xs: 0px 2px 0px 0px hsl(220 15% 20% / 0.05);
+  --shadow-sm: 0px 2px 0px 0px hsl(220 15% 20% / 0.05), 0px 1px 2px -1px hsl(220 15% 20% / 0.10);
+  --shadow: 0px 2px 0px 0px hsl(220 15% 20% / 0.05), 0px 1px 2px -1px hsl(220 15% 20% / 0.10);
+  --shadow-md: 0px 2px 0px 0px hsl(220 15% 20% / 0.05), 0px 2px 4px -1px hsl(220 15% 20% / 0.10);
+  --shadow-lg: 0px 2px 0px 0px hsl(220 15% 20% / 0.05), 0px 4px 6px -1px hsl(220 15% 20% / 0.10);
+  --shadow-xl: 0px 2px 0px 0px hsl(220 15% 20% / 0.05), 0px 8px 10px -1px hsl(220 15% 20% / 0.15);
+  --shadow-2xl: 0px 2px 0px 0px hsl(220 15% 20% / 0.10);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
+
+  /* Fallback for older browsers */
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+
+  /* Fallback for older browsers */
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+.dark {
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+
+  --opaque-button-border-intensity: 9;  /* In terms of percentages */
+
+  /* Backgrounds applied on top of other backgrounds when hovered/active */
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+
+  --background: 220 5% 8%;
+
+  --foreground: 220 5% 90%;
+
+  --border: 220 5% 18%;
+
+  --card: 220 5% 12%;
+
+  --card-foreground: 220 5% 90%;
+
+  --card-border: 220 5% 20%;
+
+  --sidebar: 220 5% 10%;
+
+  --sidebar-foreground: 220 5% 90%;
+
+  --sidebar-border: 220 5% 16%;
+
+  --sidebar-primary: 220 85% 30%;
+
+  --sidebar-primary-foreground: 220 85% 98%;
+
+  --sidebar-accent: 220 5% 16%;
+
+  --sidebar-accent-foreground: 220 5% 90%;
+
+  --sidebar-ring: 220 85% 30%;
+
+  --popover: 220 5% 14%;
+
+  --popover-foreground: 220 5% 90%;
+
+  --popover-border: 220 5% 22%;
+
+  --primary: 220 85% 30%;
+
+  --primary-foreground: 220 85% 98%;
+
+  --secondary: 220 5% 20%;
+
+  --secondary-foreground: 220 5% 90%;
+
+  --muted: 220 5% 16%;
+
+  --muted-foreground: 220 5% 65%;
+
+  --accent: 142 70% 35%;
+
+  --accent-foreground: 142 70% 98%;
+
+  --destructive: 0 85% 35%;
+
+  --destructive-foreground: 0 85% 98%;
+
+  --input: 220 5% 25%;
+  --ring: 220 85% 30%;
+  --chart-1: 220 85% 65%;
+  --chart-2: 142 70% 60%;
+  --chart-3: 280 70% 65%;
+  --chart-4: 40 85% 65%;
+  --chart-5: 190 70% 65%;
+
+  --shadow-2xs: 0px 2px 0px 0px hsl(220 5% 5% / 0.20);
+  --shadow-xs: 0px 2px 0px 0px hsl(220 5% 5% / 0.20);
+  --shadow-sm: 0px 2px 0px 0px hsl(220 5% 5% / 0.20), 0px 1px 2px -1px hsl(220 5% 5% / 0.30);
+  --shadow: 0px 2px 0px 0px hsl(220 5% 5% / 0.20), 0px 1px 2px -1px hsl(220 5% 5% / 0.30);
+  --shadow-md: 0px 2px 0px 0px hsl(220 5% 5% / 0.20), 0px 2px 4px -1px hsl(220 5% 5% / 0.30);
+  --shadow-lg: 0px 2px 0px 0px hsl(220 5% 5% / 0.20), 0px 4px 6px -1px hsl(220 5% 5% / 0.30);
+  --shadow-xl: 0px 2px 0px 0px hsl(220 5% 5% / 0.20), 0px 8px 10px -1px hsl(220 5% 5% / 0.40);
+  --shadow-2xl: 0px 2px 0px 0px hsl(220 5% 5% / 0.30);
+
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html, body {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+  }
+  
+  /* Webkit scrollbar styling for Safari/Chrome */
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  html::-webkit-scrollbar-thumb {
+    background-color: rgb(156 163 175);
+    border-radius: 4px;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/**
+ * Using the elevate system.
+ * Automatic contrast adjustment.
+ *
+ * <element className="hover-elevate" />
+ * <element className="active-elevate-2" />
+ *
+ * // Using the tailwind utility when a data attribute is "on"
+ * <element className="toggle-elevate data-[state=on]:toggle-elevated" />
+ * // Or manually controlling the toggle state
+ * <element className="toggle-elevate toggle-elevated" />
+ *
+ * Elevation systems have to handle many states.
+ * - not-hovered, vs. hovered vs. active  (three mutually exclusive states)
+ * - toggled or not
+ * - focused or not (this is not handled with these utilities)
+ *
+ * Even without handling focused or not, this is six possible combinations that
+ * need to be distinguished from eachother visually.
+ */
+@layer utilities {
+
+  /* Hide ugly search cancel button in Chrome until we can style it properly */
+  input[type="search"]::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+
+  /* Placeholder styling for contentEditable div */
+  [contenteditable][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+  }
+
+  /* .no-default-hover-elevate/no-default-active-elevate is an escape hatch so consumers of
+   * buttons/badges can remove the automatic brightness adjustment on interactions
+   * and program their own. */
+  .no-default-hover-elevate {}
+
+  .no-default-active-elevate {}
+
+
+  /**
+   * Toggleable backgrounds go behind the content. Hoverable/active goes on top.
+   * This way they can stack/compound. Both will overlap the parent's borders!
+   * So borders will be automatically adjusted both on toggle, and hover/active,
+   * and they will be compounded.
+   */
+  .toggle-elevate::before,
+  .toggle-elevate-2::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    /*border-radius: inherit;   match rounded corners */
+    border-radius: inherit;
+    z-index: -1;
+    /* sits behind content but above backdrop */
+  }
+
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
+  }
+
+  /* If there's a 1px border, adjust the inset so that it covers that parent's border */
+  .border.toggle-elevate::before {
+    inset: -1px;
+  }
+
+  /* Does not work on elements with overflow:hidden! */
+  .hover-elevate:not(.no-default-hover-elevate),
+  .active-elevate:not(.no-default-active-elevate),
+  .hover-elevate-2:not(.no-default-hover-elevate),
+  .active-elevate-2:not(.no-default-active-elevate) {
+    position: relative;
+    z-index: 0;
+  }
+
+  .hover-elevate:not(.no-default-hover-elevate)::after,
+  .active-elevate:not(.no-default-active-elevate)::after,
+  .hover-elevate-2:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:not(.no-default-active-elevate)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    /*border-radius: inherit;   match rounded corners */
+    border-radius: inherit;
+    z-index: 999;
+    /* sits in front of content */
+  }
+
+  .hover-elevate:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-1);
+  }
+
+  .hover-elevate-2:hover:not(.no-default-hover-elevate)::after,
+  .active-elevate-2:active:not(.no-default-active-elevate)::after {
+    background-color: var(--elevate-2);
+  }
+
+  /* If there's a 1px border, adjust the inset so that it covers that parent's border */
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
+  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
+  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+    inset: -1px;
+  }
+
+  /* Slow pulse animation for user counter icon */
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Profile Wizard Animations */
+  @keyframes wizard-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .animate-wizard-enter {
+    animation: wizard-enter 0.5s ease-out forwards;
+  }
+
+  @keyframes wizard-float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .animate-wizard-float {
+    animation: wizard-float 4s ease-in-out infinite;
+  }
+
+  .animate-wizard-float-delayed {
+    animation: wizard-float 5s ease-in-out 1s infinite;
+  }
+
+  @keyframes wizard-sparkle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+    }
+    25% {
+      opacity: 0.7;
+      transform: scale(0.85) rotate(-5deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1) rotate(5deg);
+    }
+    75% {
+      opacity: 0.8;
+      transform: scale(0.95) rotate(-3deg);
+    }
+  }
+
+  .animate-wizard-sparkle {
+    animation: wizard-sparkle 3s ease-in-out infinite;
+  }
+
+  @keyframes wizard-field-appear {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-wizard-field-1 {
+    opacity: 0;
+    animation: wizard-field-appear 0.4s ease-out 0.1s forwards;
+  }
+  .animate-wizard-field-2 {
+    opacity: 0;
+    animation: wizard-field-appear 0.4s ease-out 0.2s forwards;
+  }
+  .animate-wizard-field-3 {
+    opacity: 0;
+    animation: wizard-field-appear 0.4s ease-out 0.3s forwards;
+  }
+  .animate-wizard-field-4 {
+    opacity: 0;
+    animation: wizard-field-appear 0.4s ease-out 0.4s forwards;
+  }
+  .animate-wizard-field-5 {
+    opacity: 0;
+    animation: wizard-field-appear 0.4s ease-out 0.5s forwards;
+  }
+
+  @keyframes wizard-success-icon {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-wizard-success-icon {
+    animation: wizard-success-icon 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+}
+/* ============================================
+   react-phone-input-2 — theming integration
+   Match shadcn Input look (h-9, rounded-md, border, bg-background)
+   ============================================ */
+.phone-input-wrapper .react-tel-input {
+  font-family: inherit;
+  width: 100%;
+}
+
+.phone-input-wrapper .react-tel-input .form-control {
+  width: 100%;
+  height: 2.25rem; /* h-9 */
+  font-size: 1rem;
+  line-height: 1.25rem;
+  padding-left: 3rem;
+  padding-right: 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--input));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: none;
+  transition: outline-color 0.15s, box-shadow 0.15s;
+}
+
+@media (min-width: 768px) {
+  .phone-input-wrapper .react-tel-input .form-control {
+    font-size: 0.875rem;
+  }
+}
+
+.phone-input-wrapper .react-tel-input .form-control::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+.phone-input-wrapper .react-tel-input .form-control:focus {
+  outline: none;
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+
+.phone-input-wrapper .react-tel-input .form-control:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.phone-input-wrapper[data-aria-invalid="true"] .react-tel-input .form-control {
+  border-color: hsl(var(--destructive));
+}
+
+/* Country selector button */
+.phone-input-wrapper .react-tel-input .flag-dropdown {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--input));
+  border-right: none;
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+}
+
+.phone-input-wrapper .react-tel-input .flag-dropdown.open,
+.phone-input-wrapper .react-tel-input .flag-dropdown:hover,
+.phone-input-wrapper .react-tel-input .flag-dropdown:focus,
+.phone-input-wrapper .react-tel-input .selected-flag:hover,
+.phone-input-wrapper .react-tel-input .selected-flag:focus,
+.phone-input-wrapper .react-tel-input .selected-flag.open {
+  background: hsl(var(--muted));
+}
+
+.phone-input-wrapper .react-tel-input .selected-flag {
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+  padding: 0 0 0 0.5rem;
+  width: 2.75rem;
+}
+
+.phone-input-wrapper .react-tel-input .selected-flag .arrow {
+  border-top-color: hsl(var(--muted-foreground));
+}
+
+.phone-input-wrapper .react-tel-input .selected-flag .arrow.up {
+  border-bottom-color: hsl(var(--muted-foreground));
+}
+
+/* Dropdown panel */
+.phone-input-wrapper .react-tel-input .country-list {
+  background: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  margin-top: 4px;
+  z-index: 60;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+}
+
+.phone-input-wrapper .react-tel-input .country-list .country {
+  padding: 0.5rem 0.75rem;
+  color: hsl(var(--popover-foreground));
+}
+
+.phone-input-wrapper .react-tel-input .country-list .country .dial-code {
+  color: hsl(var(--muted-foreground));
+}
+
+.phone-input-wrapper .react-tel-input .country-list .country:hover,
+.phone-input-wrapper .react-tel-input .country-list .country.highlight {
+  background: hsl(var(--accent) / 0.15);
+}
+
+.phone-input-wrapper .react-tel-input .country-list .search {
+  background: hsl(var(--popover));
+  padding: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.phone-input-wrapper .react-tel-input .country-list .search-box {
+  width: 100%;
+  margin: 0;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius);
+  border: 1px solid hsl(var(--input));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.phone-input-wrapper .react-tel-input .country-list .search-box::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+.phone-input-wrapper .react-tel-input .country-list .search-box:focus {
+  border-color: hsl(var(--ring));
+}
+
+.phone-input-wrapper .react-tel-input .country-list .divider {
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.phone-input-wrapper .react-tel-input .country-list .no-entries-message {
+  padding: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+}
