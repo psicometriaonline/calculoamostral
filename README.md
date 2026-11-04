@@ -33,7 +33,7 @@ npx tsx tests/regression-power.test.ts      # regressão do motor (91)
 npx tsx tests/integration.test.ts           # integração (13), Postgres embutido
 ```
 
-O teste de integração usa `embedded-postgres` (dependência opcional). O Postgres não roda como root, então use um usuário comum.
+O teste de integração usa `embedded-postgres`, que fica fora do `package.json` para não pesar na imagem: instale antes com `npm run test:integration:deps`. O Postgres não roda como root, então use um usuário comum.
 
 ## Deploy no Coolify (VPS da Hostinger)
 
