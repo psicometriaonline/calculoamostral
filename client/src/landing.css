@@ -22,3 +22,11 @@ a:hover { color: #005A78; }
 .msg.erro { background: #FDECEA; color: #8A1C12; }
 .msg.ok { background: #E3F3F8; color: #174552; }
 input[aria-invalid="true"] { border-color: #B42318 !important; }
+
+/* Topo: texto e acesso à esquerda, tela da calculadora maior à direita */
+.hero-grid { max-width: 1400px; margin: 0 auto; padding: 72px 24px 80px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; align-items: center; }
+@media (min-width: 1000px) {
+  .hero-grid { grid-template-columns: minmax(400px, 5fr) minmax(0, 7fr); gap: 48px; padding-left: 40px; padding-right: 40px; }
+}
+.header-bar { max-width: 1400px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+@media (min-width: 1000px) { .header-bar { padding-left: 40px; padding-right: 40px; } }
