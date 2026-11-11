@@ -201,15 +201,15 @@ inputCodigo.addEventListener('input', () => {
 $<HTMLFormElement>('form-cta').addEventListener('submit', (e) => {
   e.preventDefault();
   const v = $<HTMLInputElement>('a-email2').value.trim();
-  if (!formEmail.hidden && v) inputEmail.value = v;
+  const n = $<HTMLInputElement>('a-nome2').value.trim();
+  if (!formEmail.hidden) {
+    if (v) inputEmail.value = v;
+    if (n) inputNome.value = n;
+  }
   document.getElementById('entrar')?.scrollIntoView({ block: 'start' });
   if (formEmail.hidden) return;
-  if (!inputNome.value.trim()) {
-    show(msgEmail, 'Falta só o seu nome. Depois clique em "Receber código de acesso".', 'ok');
-    inputNome.focus({ preventScroll: true });
-  } else {
-    void requestCode(false);
-  }
+  // O formulário de cima valida e mostra o erro, se faltar algo
+  void requestCode(false);
 });
 
 // Imagem de exemplo: não abre nada; mostra um aviso curto

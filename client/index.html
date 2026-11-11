@@ -176,10 +176,13 @@
   <section style="background: #F2F7F9; border-top: 1px solid #D6E3E8">
     <div style="max-width: 1200px; margin: 0 auto; padding: 64px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px">
       <h2 style="margin: 0; font-size: 28px; letter-spacing: -0.01em">Comece agora. O acesso é gratuito.</h2>
-      <form id="form-cta" novalidate style="display: flex; flex-wrap: wrap; gap: 10px; flex: 0 1 560px">
+      <form id="form-cta" novalidate style="display: flex; flex-wrap: wrap; gap: 10px; flex: 1 1 100%">
+        <label for="a-nome2" class="sr-only">Seu nome</label>
+        <input id="a-nome2" type="text" autocomplete="name" maxlength="80" placeholder="Seu nome" class="campo" style="flex: 1 1 220px; width: auto">
         <label for="a-email2" class="sr-only">Seu e-mail</label>
-        <input id="a-email2" type="email" autocomplete="email" placeholder="nome@email.com.br" style="flex: 1 1 240px; min-height: 48px; padding: 0 14px; border: 1px solid #9FB4BD; border-radius: 8px; font: inherit; font-size: 16px; background: #FFFFFF; color: #174552">
-        <button type="submit" class="btn-primary">Quero meu acesso</button>
+        <input id="a-email2" type="email" autocomplete="email" placeholder="nome@email.com.br" class="campo" style="flex: 1 1 260px; width: auto">
+        <button type="submit" class="btn-primary" style="flex: 0 0 auto">Quero meu acesso</button>
+        <p style="margin: 0; flex: 1 1 100%; font-size: 13px; line-height: 1.5; color: #4E6874">Ao solicitar seu acesso, declaro que li e concordo com a <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.</p>
       </form>
     </div>
   </section>
