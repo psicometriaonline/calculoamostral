@@ -56,3 +56,12 @@ input[aria-invalid="true"] { border-color: #B42318 !important; }
 }
 @keyframes aviso-entra { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (prefers-reduced-motion: reduce) { .aviso-img { animation: none; } }
+
+/* Cabeçalho: logo + nome; no celular só logo menor e o botão Entrar */
+.marca-logo { height: 34px; width: auto; display: block; }
+@media (max-width: 720px) {
+  .header-bar { flex-wrap: nowrap; padding-top: 12px; padding-bottom: 12px; }
+  .marca-logo { height: 24px; }
+  .marca-nome, .nav-secao { display: none; }
+  #nav-entrar { min-height: 40px !important; padding: 0 16px !important; font-size: 15px; }
+}
