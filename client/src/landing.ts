@@ -21,8 +21,7 @@ const formEmail = $<HTMLFormElement>('form-email');
 const formCodigo = $<HTMLFormElement>('form-codigo');
 const painelLogado = $<HTMLDivElement>('painel-logado');
 const inputEmail = $<HTMLInputElement>('a-email');
-const inputPriv = $<HTMLInputElement>('a-priv');
-const inputMkt = $<HTMLInputElement>('a-mkt');
+const inputNome = $<HTMLInputElement>('a-nome');
 const inputCodigo = $<HTMLInputElement>('a-codigo');
 const btnEnviar = $<HTMLButtonElement>('btn-enviar');
 const btnEntrar = $<HTMLButtonElement>('btn-entrar');
@@ -32,6 +31,7 @@ const msgCodigo = $<HTMLParagraphElement>('msg-codigo');
 const turnstileBox = $<HTMLDivElement>('turnstile');
 
 let currentEmail = '';
+let currentNome = '';
 let resendTimer: number | undefined;
 
 function show(el: HTMLElement, text: string, kind: 'erro' | 'ok' = 'erro') {
@@ -85,7 +85,7 @@ function stepEmail() {
   painelLogado.hidden = true;
   formEmail.hidden = false;
   turnstileBox.hidden = !hasTurnstile;
-  inputEmail.focus();
+  (inputNome.value.trim() ? inputEmail : inputNome).focus();
 }
 function stepCodigo(sentTo: string, resendAfter: number) {
   formEmail.hidden = true;
@@ -118,17 +118,20 @@ async function requestCode(fromResend = false) {
   const msg = fromResend ? msgCodigo : msgEmail;
   hide(msg);
   const email = inputEmail.value.trim();
+  const nome = inputNome.value.trim().replace(/\s+/g, ' ');
   if (!fromResend) {
+    inputNome.setAttribute('aria-invalid', 'false');
     inputEmail.setAttribute('aria-invalid', 'false');
+    if (nome.length < 2) {
+      inputNome.setAttribute('aria-invalid', 'true');
+      show(msg, 'Digite o seu nome.');
+      inputNome.focus();
+      return;
+    }
     if (!/^\S+@\S+\.\S+$/.test(email)) {
       inputEmail.setAttribute('aria-invalid', 'true');
       show(msg, 'Digite um e-mail válido.');
       inputEmail.focus();
-      return;
-    }
-    if (!inputPriv.checked) {
-      show(msg, 'Para continuar, aceite a Política de privacidade.');
-      inputPriv.focus();
       return;
     }
   }
@@ -139,8 +142,8 @@ async function requestCode(fromResend = false) {
   const turnstileToken = await takeToken();
   const r = await api('POST', '/api/auth/request-code', {
     email: fromResend ? currentEmail : email,
+    name: fromResend ? currentNome : nome,
     privacy: true,
-    marketing: inputMkt.checked,
     turnstileToken,
   });
   resetTurnstile();
@@ -151,7 +154,7 @@ async function requestCode(fromResend = false) {
     if (fromResend && r.data?.retryAfter) startResendCountdown(r.data.retryAfter);
     return;
   }
-  if (!fromResend) currentEmail = email;
+  if (!fromResend) { currentEmail = email; currentNome = nome; }
   if (fromResend) {
     startResendCountdown(r.data.resendAfter ?? 60);
     inputCodigo.value = '';
@@ -201,12 +204,27 @@ $<HTMLFormElement>('form-cta').addEventListener('submit', (e) => {
   if (!formEmail.hidden && v) inputEmail.value = v;
   document.getElementById('entrar')?.scrollIntoView({ block: 'start' });
   if (formEmail.hidden) return;
-  if (!inputPriv.checked) {
-    show(msgEmail, 'Marque o aceite da Política de privacidade e clique em "Receber código de acesso".', 'ok');
-    inputPriv.focus({ preventScroll: true });
+  if (!inputNome.value.trim()) {
+    show(msgEmail, 'Falta só o seu nome. Depois clique em "Receber código de acesso".', 'ok');
+    inputNome.focus({ preventScroll: true });
   } else {
     void requestCode(false);
   }
+});
+
+// Imagem de exemplo: não abre nada; mostra um aviso curto
+const exemploImg = document.getElementById('exemplo-img');
+const avisoImg = document.getElementById('aviso-img');
+let avisoTimer: number | undefined;
+exemploImg?.addEventListener('click', () => {
+  if (!avisoImg) return;
+  const lado = window.matchMedia('(min-width: 1000px)').matches ? 'ao lado' : 'acima';
+  avisoImg.textContent = painelLogado.hidden
+    ? `Cadastre-se no formulário ${lado} para receber o seu acesso por e-mail`
+    : `Você já tem acesso: clique em "Abrir a calculadora" no quadro ${lado}`;
+  avisoImg.hidden = false;
+  window.clearTimeout(avisoTimer);
+  avisoTimer = window.setTimeout(() => { avisoImg.hidden = true; }, 4000);
 });
 
 $('btn-sair').addEventListener('click', async () => {

@@ -92,14 +92,19 @@ async function completeLogin(req: Request, res: Response, codeRow: any) {
   let userId: string;
   let isNew = false;
   let marketingNow = false;
+  let nameChanged = false;
   try {
     await client.query('BEGIN');
     const used = await client.query(`UPDATE login_codes SET used_at = now() WHERE id = $1 AND used_at IS NULL RETURNING id`, [codeRow.id]);
     if (!used.rowCount) { await client.query('ROLLBACK'); return false; }
-    const existing = (await client.query(`SELECT id, marketing_opt_in FROM users WHERE email = $1 FOR UPDATE`, [codeRow.email])).rows[0];
+    const existing = (await client.query(`SELECT id, marketing_opt_in, name FROM users WHERE email = $1 FOR UPDATE`, [codeRow.email])).rows[0];
     if (existing) {
       userId = existing.id;
       marketingNow = codeRow.marketing_opt_in && !existing.marketing_opt_in;
+      if (codeRow.name && codeRow.name !== existing.name) {
+        nameChanged = true;
+        await client.query(`UPDATE users SET name = $2 WHERE id = $1`, [userId, codeRow.name]);
+      }
       await client.query(
         `UPDATE users SET last_login_at = now(),
                 privacy_accepted_at = COALESCE(privacy_accepted_at, now()), privacy_ip = COALESCE(privacy_ip, $2),
@@ -113,9 +118,9 @@ async function completeLogin(req: Request, res: Response, codeRow: any) {
       isNew = true;
       marketingNow = !!codeRow.marketing_opt_in;
       const r = await client.query(
-        `INSERT INTO users (email, last_login_at, privacy_accepted_at, privacy_ip, marketing_opt_in, marketing_opt_in_at, marketing_ip)
-         VALUES ($1, now(), now(), $2, $3, CASE WHEN $3 THEN now() END, CASE WHEN $3 THEN $2 END) RETURNING id`,
-        [codeRow.email, ip, marketingNow],
+        `INSERT INTO users (email, last_login_at, privacy_accepted_at, privacy_ip, marketing_opt_in, marketing_opt_in_at, marketing_ip, name)
+         VALUES ($1, now(), now(), $2, $3, CASE WHEN $3 THEN now() END, CASE WHEN $3 THEN $2 END, $4) RETURNING id`,
+        [codeRow.email, ip, marketingNow, codeRow.name ?? null],
       );
       userId = r.rows[0].id;
     }
@@ -127,10 +132,17 @@ async function completeLogin(req: Request, res: Response, codeRow: any) {
     client.release();
   }
   await createSession(req, res, userId);
-  if (isNew || marketingNow) {
+  if (isNew || marketingNow || nameChanged) {
     await enqueue(userId, { action: 'sync', payload: { marketing: marketingNow, marketingAt: new Date().toISOString() } });
   }
   return true;
+}
+
+/** Nome digitado no formulário: sem caracteres de controle, espaços normalizados, até 80 caracteres. */
+export function cleanName(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const t = v.normalize('NFC').replace(/[\u0000-\u001F\u007F<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80);
+  return t.length >= 2 ? t : null;
 }
 
 export function registerAuthRoutes(app: Express) {
@@ -138,6 +150,8 @@ export function registerAuthRoutes(app: Express) {
     const ip = clientIp(req);
     const email = normalizeEmail(req.body?.email);
     if (!email) return res.status(400).json({ error: 'Digite um e-mail válido.' });
+    const name = cleanName(req.body?.name);
+    if (!name) return res.status(400).json({ error: 'Digite o seu nome.' });
     if (req.body?.privacy !== true) return res.status(400).json({ error: 'Para continuar, aceite a Política de privacidade.' });
     if (isDisposable(email)) return res.status(400).json({ error: 'Use um e-mail permanente, como o institucional ou o pessoal.' });
 
@@ -171,9 +185,9 @@ export function registerAuthRoutes(app: Express) {
     const linkToken = newToken(32);
     await q(`UPDATE login_codes SET superseded_at = now() WHERE email = $1 AND used_at IS NULL AND superseded_at IS NULL`, [email]);
     await q(
-      `INSERT INTO login_codes (email, code_hash, link_token_hash, privacy_accepted, marketing_opt_in, expires_at, ip)
-       VALUES ($1, $2, $3, true, $4, now() + ($5 || ' minutes')::interval, $6)`,
-      [email, hmac(`${email}:${code}`), hmac(linkToken), req.body?.marketing === true, String(config.codeTtlMinutes), ip],
+      `INSERT INTO login_codes (email, code_hash, link_token_hash, privacy_accepted, marketing_opt_in, expires_at, ip, name)
+       VALUES ($1, $2, $3, true, $4, now() + ($5 || ' minutes')::interval, $6, $7)`,
+      [email, hmac(`${email}:${code}`), hmac(linkToken), req.body?.marketing === true, String(config.codeTtlMinutes), ip, name],
     );
     const link = `${config.appUrl}/api/auth/link?t=${linkToken}`;
     const sent = await sendLoginCode(email, code, link);

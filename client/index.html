@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora Amostral · Psicometria Online</title>
-<meta name="description" content="Calcule o tamanho da amostra da sua pesquisa por poder estatístico ou por precisão, em 33 testes. Acesso gratuito com o seu e-mail.">
+<meta name="description" content="Calcule o tamanho da amostra da sua pesquisa por poder estatístico ou por precisão, para dezenas de testes estatísticos. Acesso gratuito com o seu e-mail.">
 <meta property="og:title" content="Calculadora Amostral · Psicometria Online">
-<meta property="og:description" content="Quantos participantes a sua pesquisa precisa? 33 testes de poder e 4 procedimentos de precisão, com o parágrafo do método pronto.">
+<meta property="og:description" content="Quantos participantes a sua pesquisa precisa? Dezenas de testes estatísticos e cálculos por precisão, com o parágrafo do método pronto.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://calculoamostral.com.br/">
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="/src/landing.css">
 </head>
 <body>
-<div style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #174552; background: #FFFFFF; min-height: 100%">
+<div class="pagina" style="font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #174552; background: #FFFFFF; min-height: 100%">
 
   <header style="border-bottom: 1px solid #D6E3E8">
     <div class="header-bar">
@@ -25,11 +25,9 @@
         <span style="padding-left: 14px; border-left: 1px solid #D6E3E8; font-size: 15px; font-weight: 600; color: #174552">Calculadora Amostral</span>
       </a>
       <nav aria-label="Seções" style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px; font-size: 15px">
-        <a href="#como" style="color: #174552; text-decoration: none">Como funciona</a>
-        <a href="#recursos" style="color: #174552; text-decoration: none">Recursos</a>
         <a href="#testes" style="color: #174552; text-decoration: none">Testes</a>
         <a href="#perguntas" style="color: #174552; text-decoration: none">Perguntas</a>
-        <a id="nav-entrar" href="#entrar" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #00749A; color: #00749A; font-weight: 600; text-decoration: none">Entrar</a>
+        <a id="nav-entrar" href="#entrar" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 8px; border: 1px solid #0A2F66; color: #0A2F66; font-weight: 600; text-decoration: none">Entrar</a>
       </nav>
     </div>
   </header>
@@ -39,24 +37,21 @@
       <div style="display: flex; flex-direction: column; gap: 24px">
         <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #00749A">Calculadora de tamanho amostral</span>
         <h1 style="margin: 0; font-size: 48px; line-height: 1.08; letter-spacing: -0.02em; font-weight: 700; text-wrap: balance">Quantos participantes a sua pesquisa precisa?</h1>
-        <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #3D5A66; max-width: 34em">Calcule o tamanho da amostra por poder estatístico ou por precisão, em 33 testes. O resultado sai com referências e exemplo de como reportar.</p>
+        <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #3D5A66; max-width: 34em">Calcule o tamanho da amostra por poder estatístico ou por precisão, para dezenas de testes estatísticos. O resultado sai com referências e exemplo de como reportar.</p>
 
         <div id="acesso" style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; max-width: 520px">
           <form id="form-email" novalidate style="display: flex; flex-direction: column; gap: 14px">
-            <label for="a-email" style="font-size: 14px; font-weight: 600">Seu e-mail</label>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px">
-              <input id="a-email" name="email" type="email" autocomplete="email" required placeholder="nome@email.com.br" style="flex: 1 1 240px; min-height: 48px; padding: 0 14px; border: 1px solid #9FB4BD; border-radius: 8px; font: inherit; font-size: 16px; color: #174552; background: #FFFFFF">
-              <button id="btn-enviar" type="submit" class="btn-primary">Receber código de acesso</button>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="a-nome" style="font-size: 14px; font-weight: 600">Seu nome</label>
+              <input id="a-nome" name="name" type="text" autocomplete="name" required maxlength="80" placeholder="Como você quer ser chamado" class="campo">
             </div>
-            <label for="a-priv" style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; color: #3D5A66">
-              <input id="a-priv" name="privacy" type="checkbox" required style="width: 18px; height: 18px; margin: 1px 0 0; accent-color: #00749A; flex: 0 0 auto">
-              <span>Li e aceito a <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.</span>
-            </label>
-            <label for="a-mkt" style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; color: #3D5A66">
-              <input id="a-mkt" name="marketing" type="checkbox" style="width: 18px; height: 18px; margin: 1px 0 0; accent-color: #00749A; flex: 0 0 auto">
-              <span>Quero receber conteúdos da Psicometria Online por e-mail.</span>
-            </label>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="a-email" style="font-size: 14px; font-weight: 600">Seu e-mail</label>
+              <input id="a-email" name="email" type="email" autocomplete="email" required placeholder="nome@email.com.br" class="campo">
+            </div>
+            <button id="btn-enviar" type="submit" class="btn-primary" style="align-self: flex-start">Receber código de acesso</button>
             <p id="msg-email" class="msg" role="alert" aria-live="polite" hidden></p>
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #4E6874">Ao solicitar seu acesso, declaro que li e concordo com a <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.</p>
             <p style="margin: 0; font-size: 13px; color: #4E6874">Acesso gratuito. Enviamos um código de 6 dígitos para o seu e-mail; não há senha.</p>
           </form>
 
@@ -88,108 +83,65 @@
       </div>
 
       <figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
-        <a href="/exemplo-calculadora.webp" target="_blank" rel="noopener" title="Ver a imagem em tamanho real" style="display: block; border: 1px solid #D6E3E8; border-radius: 12px; overflow: hidden; background: #FFFFFF; box-shadow: 0 12px 32px rgba(23, 69, 82, 0.12)">
+        <div id="exemplo-img" style="position: relative; border: 1px solid #D6E3E8; border-radius: 12px; overflow: hidden; background: #FFFFFF; box-shadow: 0 12px 32px rgba(10, 47, 102, 0.12)">
           <img src="/exemplo-calculadora.webp" width="1091" height="784" alt="Tela da calculadora: regressão linear múltipla com f² = 0,17, 4 preditores, α = 0,05 e poder 0,80 resulta em 76 participantes, com a curva de poder marcando N = 76 e poder de 80,6%" style="display: block; width: 100%; height: auto">
-        </a>
+          <p id="aviso-img" class="aviso-img" role="status" aria-live="polite" hidden></p>
+        </div>
         <figcaption style="font-size: 14px; color: #4E6874">Exemplo real: regressão linear múltipla com f² = 0,17 e 4 preditores pede <strong style="color: #174552">76 participantes</strong> para poder de 80%.</figcaption>
       </figure>
     </div>
   </section>
 
-  <section id="como" style="max-width: 1200px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; gap: 32px">
-    <h2 style="margin: 0; font-size: 32px; letter-spacing: -0.01em">Como funciona</h2>
-    <ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px">
-      <li style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 2px solid #00749A">
-        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #00749A">1</span>
-        <span style="font-size: 20px; font-weight: 600">Informe o e-mail</span>
-        <span style="font-size: 16px; line-height: 1.55; color: #3D5A66">Você recebe um código de 6 dígitos, válido por 10 minutos.</span>
-      </li>
-      <li style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 2px solid #00749A">
-        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #00749A">2</span>
-        <span style="font-size: 20px; font-weight: 600">Digite o código</span>
-        <span style="font-size: 16px; line-height: 1.55; color: #3D5A66">Sem senha e sem formulário longo. O acesso fica salvo no navegador por 30 dias.</span>
-      </li>
-      <li style="display: flex; flex-direction: column; gap: 10px; padding-top: 20px; border-top: 2px solid #00749A">
-        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #00749A">3</span>
-        <span style="font-size: 20px; font-weight: 600">Calcule e salve</span>
-        <span style="font-size: 16px; line-height: 1.55; color: #3D5A66">Escolha o teste, informe efeito, α e poder, e guarde o resultado no seu histórico.</span>
-      </li>
-    </ol>
-  </section>
-
-  <section id="recursos" style="background: #F2F7F9; border-top: 1px solid #D6E3E8; border-bottom: 1px solid #D6E3E8">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; gap: 32px">
-      <h2 style="margin: 0; font-size: 32px; letter-spacing: -0.01em">O que a calculadora entrega</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px">
-        <div style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 8px">
-          <h3 style="margin: 0; font-size: 18px">Três perguntas, um lugar</h3>
-          <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D5A66">Calcule o n necessário, o poder de uma amostra que você já tem ou o menor efeito que ela consegue detectar.</p>
-        </div>
-        <div style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 8px">
-          <h3 style="margin: 0; font-size: 18px">Resultado completo</h3>
-          <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D5A66">Graus de liberdade, valor crítico, parâmetro de não centralidade e poder real com o N inteiro.</p>
-        </div>
-        <div style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 8px">
-          <h3 style="margin: 0; font-size: 18px">Curva de poder</h3>
-          <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D5A66">O gráfico passa pelo valor calculado e mostra quanto o poder muda com mais ou menos participantes.</p>
-        </div>
-        <div style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 8px">
-          <h3 style="margin: 0; font-size: 18px">Precisão de estimativa</h3>
-          <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D5A66">Prevalência, média, diferença de médias e diferença de proporções, com população finita e taxa de não resposta.</p>
-        </div>
-        <div style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 8px">
-          <h3 style="margin: 0; font-size: 18px">Texto para o método</h3>
-          <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D5A66">Um parágrafo pronto para a seção de método da dissertação ou do artigo, com as referências em APA.</p>
-        </div>
-        <div style="background: #FFFFFF; border: 1px solid #D6E3E8; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 8px">
-          <h3 style="margin: 0; font-size: 18px">Histórico e relatório</h3>
-          <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3D5A66">Salve os cálculos na sua conta, volte a eles de qualquer computador e baixe o relatório em TXT.</p>
-        </div>
-      </div>
+  <section id="testes" style="max-width: 1200px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; gap: 36px">
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 760px">
+      <h2 style="margin: 0; font-size: 32px; line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance">Cálculos para dezenas de testes estatísticos em um só lugar</h2>
+      <p style="margin: 0; font-size: 17px; line-height: 1.55; color: #3D5A66">Do teste t à MANOVA, das correlações às regressões: escolha a análise prevista no seu projeto e descubra quantos participantes ela exige. Se o objetivo é estimar, calcule a amostra pela precisão.</p>
     </div>
-  </section>
-
-  <section id="testes" style="max-width: 1200px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; gap: 32px">
-    <div style="display: flex; flex-direction: column; gap: 8px">
-      <h2 style="margin: 0; font-size: 32px; letter-spacing: -0.01em">33 testes de poder estatístico</h2>
-      <p style="margin: 0; font-size: 16px; color: #3D5A66">Mais 4 procedimentos de precisão de estimativa.</p>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px">
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <h3 style="margin: 0; font-size: 16px; padding-bottom: 10px; border-bottom: 1px solid #D6E3E8">Diferenças de médias · 15</h3>
-        <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #3D5A66">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px">
+      <div class="grupo-testes">
+        <h3>Comparação de grupos</h3>
+        <ul>
           <li>Teste t de uma amostra, independente e pareado</li>
-          <li>Wilcoxon de uma amostra e pareado</li>
-          <li>Mann-Whitney</li>
+          <li>Wilcoxon e Mann-Whitney</li>
           <li>ANOVA simples, fatorial, de medidas repetidas e mista</li>
           <li>Kruskal-Wallis e Friedman</li>
           <li>MANOVA simples, fatorial e de medidas repetidas</li>
         </ul>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <h3 style="margin: 0; font-size: 16px; padding-bottom: 10px; border-bottom: 1px solid #D6E3E8">Correlações e regressões · 9</h3>
-        <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #3D5A66">
-          <li>Correlação de Pearson, Spearman e Kendall</li>
-          <li>Comparação de correlações independentes e dependentes</li>
+      <div class="grupo-testes">
+        <h3>Correlações e regressões</h3>
+        <ul>
+          <li>Correlações de Pearson, Spearman e Kendall</li>
+          <li>Comparação entre correlações</li>
           <li>Regressão linear múltipla (R² total e incremento de R²)</li>
-          <li>Regressão logística múltipla</li>
+          <li>Regressão logística</li>
           <li>Regressão de Poisson</li>
         </ul>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 12px">
-        <h3 style="margin: 0; font-size: 16px; padding-bottom: 10px; border-bottom: 1px solid #D6E3E8">Proporções e frequências · 9</h3>
-        <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; line-height: 1.45; color: #3D5A66">
-          <li>Proporção única e duas proporções independentes</li>
+      <div class="grupo-testes">
+        <h3>Proporções e frequências</h3>
+        <ul>
+          <li>Uma proporção ou duas proporções</li>
           <li>Teste do sinal e McNemar</li>
-          <li>Qui-quadrado 2×2, de independência e de aderência</li>
-          <li>Fisher exato (aproximação normal)</li>
+          <li>Qui-quadrado de independência e de aderência</li>
+          <li>Teste exato de Fisher (aproximação normal)</li>
           <li>Q de Cochran</li>
+        </ul>
+      </div>
+      <div class="grupo-testes">
+        <h3>Precisão de estimativa</h3>
+        <ul>
+          <li>Prevalência (proporção)</li>
+          <li>Média</li>
+          <li>Diferença entre médias</li>
+          <li>Diferença entre proporções</li>
+          <li>Ajuste para população finita e taxa de não resposta</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <section style="background: #0E2A33; color: #FFFFFF">
+  <section class="secao-escura" style="background: #0E2A33; color: #FFFFFF">
     <div style="max-width: 1200px; margin: 0 auto; padding: 72px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; align-items: start">
       <div style="display: flex; flex-direction: column; gap: 14px">
         <h2 style="margin: 0; font-size: 32px; letter-spacing: -0.01em; text-wrap: balance">O parágrafo do método sai pronto</h2>
@@ -223,11 +175,11 @@
 
   <section style="background: #F2F7F9; border-top: 1px solid #D6E3E8">
     <div style="max-width: 1200px; margin: 0 auto; padding: 64px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px">
-      <h2 style="margin: 0; font-size: 28px; letter-spacing: -0.01em">Comece pelo seu e-mail.</h2>
+      <h2 style="margin: 0; font-size: 28px; letter-spacing: -0.01em">Comece agora. O acesso é gratuito.</h2>
       <form id="form-cta" novalidate style="display: flex; flex-wrap: wrap; gap: 10px; flex: 0 1 560px">
         <label for="a-email2" class="sr-only">Seu e-mail</label>
         <input id="a-email2" type="email" autocomplete="email" placeholder="nome@email.com.br" style="flex: 1 1 240px; min-height: 48px; padding: 0 14px; border: 1px solid #9FB4BD; border-radius: 8px; font: inherit; font-size: 16px; background: #FFFFFF; color: #174552">
-        <button type="submit" class="btn-primary">Receber código</button>
+        <button type="submit" class="btn-primary">Quero meu acesso</button>
       </form>
     </div>
   </section>
@@ -239,8 +191,8 @@
         <img src="/logo-horizontal-branco.png" alt="psicometria.online" style="height: 30px; width: auto; display: block">
       </div>
       <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; font-size: 14px">
-        <a href="/privacidade" style="color: #7FD3EA">Política de privacidade</a>
-        <a href="/termos" style="color: #7FD3EA">Termos de uso</a>
+        <a href="/privacidade" target="_blank" rel="noopener" style="color: #7FD3EA">Política de privacidade</a>
+        <a href="/termos" target="_blank" rel="noopener" style="color: #7FD3EA">Termos de uso</a>
         <span>© 2026 Psicometria Online Academy</span>
       </div>
     </div>

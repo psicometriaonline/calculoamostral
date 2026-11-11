@@ -58,11 +58,18 @@ async function tagId(name: string): Promise<string> {
   return id;
 }
 
-async function ensureContact(userId: string, extraFields?: Array<{ field: string; value: string }>): Promise<string> {
-  const u = await one<{ email: string; ac_contact_id: string | null }>(`SELECT email, ac_contact_id FROM users WHERE id = $1`, [userId]);
+/** Divide o nome em primeiro nome e sobrenome, como o ActiveCampaign guarda. */
+export function splitName(name: string | null | undefined): { firstName?: string; lastName?: string } {
+  const parts = (name ?? '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return {};
+  return { firstName: parts[0], lastName: parts.slice(1).join(' ') || undefined };
+}
+
+async function ensureContact(userId: string, extraFields?: Array<{ field: string; value: string }>, forceSync = false): Promise<string> {
+  const u = await one<{ email: string; ac_contact_id: string | null; name: string | null }>(`SELECT email, ac_contact_id, name FROM users WHERE id = $1`, [userId]);
   if (!u) throw new Error('usuário não existe mais');
-  if (u.ac_contact_id && !extraFields?.length) return u.ac_contact_id;
-  const body: any = { contact: { email: u.email } };
+  if (u.ac_contact_id && !extraFields?.length && !forceSync) return u.ac_contact_id;
+  const body: any = { contact: { email: u.email, ...splitName(u.name) } };
   if (extraFields?.length) body.contact.fieldValues = extraFields;
   const r = await ac('POST', '/contact/sync', body);
   const id = String(r.contact.id);
@@ -76,7 +83,7 @@ async function process(row: { id: string; user_id: string; action: string; paylo
     if (row.payload?.marketing && config.acMarketingFieldId) {
       fields.push({ field: config.acMarketingFieldId, value: `Sim (${String(row.payload.marketingAt ?? '').slice(0, 10)})` });
     }
-    const contactId = await ensureContact(row.user_id, fields);
+    const contactId = await ensureContact(row.user_id, fields, true);
     await ac('POST', '/contactTags', { contactTag: { contact: contactId, tag: await tagId(config.acTagSignup) } });
   } else if (row.action === 'tag') {
     const contactId = await ensureContact(row.user_id);

@@ -134,17 +134,21 @@ async function main() {
   });
 
   await test('validações do pedido de código', async () => {
-    assert.equal((await call('a', 'POST', '/api/auth/request-code', { email: 'invalido', privacy: true })).status, 400);
-    const semAceite = await call('a', 'POST', '/api/auth/request-code', { email: 'ana@exemplo.com.br', privacy: false });
+    assert.equal((await call('a', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email: 'invalido', privacy: true })).status, 400);
+    const semAceite = await call('a', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email: 'ana@exemplo.com.br', privacy: false });
     assert.equal(semAceite.status, 400);
     assert.match(semAceite.data.error, /Política de privacidade/);
-    assert.equal((await call('a', 'POST', '/api/auth/request-code', { email: 'x@mailinator.com', privacy: true })).status, 400);
-    const outraOrigem = await call('a', 'POST', '/api/auth/request-code', { email: 'ana@exemplo.com.br', privacy: true }, { Origin: 'https://evil.example' });
+    assert.equal((await call('a', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email: 'x@mailinator.com', privacy: true })).status, 400);
+    const outraOrigem = await call('a', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email: 'ana@exemplo.com.br', privacy: true }, { Origin: 'https://evil.example' });
     assert.equal(outraOrigem.status, 403);
+    const semNome = await call('a', 'POST', '/api/auth/request-code', { email: 'ana@exemplo.com.br', privacy: true });
+    assert.equal(semNome.status, 400);
+    assert.match(semNome.data.error, /nome/);
+    assert.equal((await call('a', 'POST', '/api/auth/request-code', { name: ' x ', email: 'ana@exemplo.com.br', privacy: true })).status, 400);
   });
 
   await test('pedido de código envia e-mail pelo Resend com remetente e conteúdo certos', async () => {
-    const r = await call('a', 'POST', '/api/auth/request-code', { email: '  Ana@Exemplo.com.BR ', privacy: true, marketing: true });
+    const r = await call('a', 'POST', '/api/auth/request-code', { name: '  Ana   Maria Souza ', email: '  Ana@Exemplo.com.BR ', privacy: true, marketing: true });
     assert.equal(r.status, 200);
     assert.equal(r.data.sentTo, 'a***@exemplo.com.br');
     const m = sentMails.at(-1);
@@ -159,7 +163,7 @@ async function main() {
   });
 
   await test('reenvio antes de 60 s é recusado', async () => {
-    const r = await call('a', 'POST', '/api/auth/request-code', { email: 'ana@exemplo.com.br', privacy: true });
+    const r = await call('a', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email: 'ana@exemplo.com.br', privacy: true });
     assert.equal(r.status, 429);
     assert.ok(r.data.retryAfter > 0 && r.data.retryAfter <= 60);
   });
@@ -218,7 +222,7 @@ async function main() {
     assert.equal(list.data[0].result.requiredN1, 67);
     assert.equal((await call('a', 'GET', '/api/sample-size-precision/history')).data.length, 0);
     // Segunda pessoa, entrando pelo link do e-mail
-    await call('b', 'POST', '/api/auth/request-code', { email: 'bruno@exemplo.com', privacy: true });
+    await call('b', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email: 'bruno@exemplo.com', privacy: true });
     const { link } = await lastCode('bruno@exemplo.com');
     const viaLink = await call('b', 'GET', new URL(link).pathname + new URL(link).search);
     assert.equal(viaLink.status, 302);
@@ -234,10 +238,10 @@ async function main() {
 
   await test('código expira e bloqueia após 5 erros; novo código invalida o anterior', async () => {
     const email = 'carla@exemplo.org';
-    await call('c', 'POST', '/api/auth/request-code', { email, privacy: true });
+    await call('c', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email, privacy: true });
     const first = (await lastCode(email)).code;
     await resetCooldown(email);
-    await call('c', 'POST', '/api/auth/request-code', { email, privacy: true });
+    await call('c', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email, privacy: true });
     const second = (await lastCode(email)).code;
     if (first !== second) {
       assert.equal((await call('c', 'POST', '/api/auth/verify-code', { email, code: first })).status, 400);
@@ -248,7 +252,7 @@ async function main() {
     assert.equal(locked.status, 400);
     assert.equal(locked.data.expired, true);
     await resetCooldown(email);
-    await call('c', 'POST', '/api/auth/request-code', { email, privacy: true });
+    await call('c', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email, privacy: true });
     await q(`UPDATE login_codes SET expires_at = now() - interval '1 second' WHERE email = $1 AND used_at IS NULL AND superseded_at IS NULL`, [email]);
     const exp = await call('c', 'POST', '/api/auth/verify-code', { email, code: (await lastCode(email)).code });
     assert.match(exp.data.error, /expirou/);
@@ -259,7 +263,7 @@ async function main() {
     let last = 0;
     for (let i = 0; i < 6; i++) {
       await resetCooldown(email);
-      last = (await call('d', 'POST', '/api/auth/request-code', { email, privacy: true })).status;
+      last = (await call('d', 'POST', '/api/auth/request-code', { name: 'Pessoa Teste', email, privacy: true })).status;
     }
     assert.equal(last, 429);
   });
@@ -276,6 +280,10 @@ async function main() {
     assert.ok(!urls.some((u) => /contactLists|contactAutomations|campaigns|messages/.test(u)));
     const anaSync = acCalls.find((c) => c.url.startsWith('/api/3/contact/sync') && c.body.contact.email === 'ana@exemplo.com.br' && c.body.contact.fieldValues);
     assert.equal(anaSync?.body.contact.fieldValues[0].field, '77');
+    assert.equal(anaSync?.body.contact.firstName, 'Ana');
+    assert.equal(anaSync?.body.contact.lastName, 'Maria Souza');
+    const anaNome = await q(`SELECT name FROM users WHERE email = 'ana@exemplo.com.br'`);
+    assert.equal(anaNome[0].name, 'Ana Maria Souza');
     const created = acCalls.filter((c) => c.url === '/api/3/tags' && c.method === 'POST').map((c) => c.body.tag.tag);
     assert.ok(created.includes('[POA][CALC] - Cadastro'));
     assert.ok(created.includes('[POA][CALC] - Usou poder'));
