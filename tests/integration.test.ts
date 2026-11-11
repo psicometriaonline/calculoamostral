@@ -33,6 +33,7 @@ const acServer = http.createServer((req, res) => {
       return res.end(JSON.stringify({ tag: t }));
     }
     if (req.url === '/api/3/contactTags') return res.end(JSON.stringify({ contactTag: { id: '1' } }));
+    if (req.url === '/api/3/contactLists') return res.end(JSON.stringify({ contactList: { id: '1' } }));
     res.statusCode = 404;
     res.end('{}');
   });
@@ -268,28 +269,27 @@ async function main() {
     assert.equal(last, 429);
   });
 
-  await test('ActiveCampaign: só contato + tag; nenhuma lista, automação ou envio', async () => {
+  await test('ActiveCampaign: contato + lista Leads + uma tag; nenhuma automação ou envio', async () => {
     const pending = await q(`SELECT action, payload FROM ac_outbox ORDER BY id`);
-    assert.ok(pending.some((r) => r.action === 'sync' && r.payload.marketing === true));
+    assert.ok(pending.some((r) => r.action === 'sync'));
+    assert.ok(!pending.some((r) => r.action === 'tag'), 'eventos de uso não devem gerar tags');
     await processOutboxOnce(50);
     await processOutboxOnce(50);
     const left = await q(`SELECT status, last_error FROM ac_outbox WHERE status <> 'done'`);
     assert.deepEqual(left, []);
     const urls = acCalls.map((c) => `${c.method} ${c.url.split('?')[0]}`);
-    assert.ok(urls.every((u) => /^(POST \/api\/3\/contact\/sync|GET \/api\/3\/tags|POST \/api\/3\/tags|POST \/api\/3\/contactTags)$/.test(u)), urls.join('\n'));
-    assert.ok(!urls.some((u) => /contactLists|contactAutomations|campaigns|messages/.test(u)));
-    const anaSync = acCalls.find((c) => c.url.startsWith('/api/3/contact/sync') && c.body.contact.email === 'ana@exemplo.com.br' && c.body.contact.fieldValues);
-    assert.equal(anaSync?.body.contact.fieldValues[0].field, '77');
+    assert.ok(urls.every((u) => /^(POST \/api\/3\/contact\/sync|GET \/api\/3\/tags|POST \/api\/3\/tags|POST \/api\/3\/contactTags|POST \/api\/3\/contactLists)$/.test(u)), urls.join('\n'));
+    assert.ok(!urls.some((u) => /contactAutomations|campaigns|messages/.test(u)));
+    const lists = acCalls.filter((c) => c.url === '/api/3/contactLists');
+    assert.ok(lists.length > 0);
+    assert.ok(lists.every((c) => c.body.contactList.list === '31' && c.body.contactList.status === 1));
+    const anaSync = acCalls.find((c) => c.url.startsWith('/api/3/contact/sync') && c.body.contact.email === 'ana@exemplo.com.br');
     assert.equal(anaSync?.body.contact.firstName, 'Ana');
     assert.equal(anaSync?.body.contact.lastName, 'Maria Souza');
     const anaNome = await q(`SELECT name FROM users WHERE email = 'ana@exemplo.com.br'`);
     assert.equal(anaNome[0].name, 'Ana Maria Souza');
     const created = acCalls.filter((c) => c.url === '/api/3/tags' && c.method === 'POST').map((c) => c.body.tag.tag);
-    assert.ok(created.includes('[POA][CALC] - Cadastro'));
-    assert.ok(created.includes('[POA][CALC] - Usou poder'));
-    assert.ok(!created.includes('usou-calculadora-amostral'));
-    const sent = await q(`SELECT tag FROM ac_tags_sent WHERE user_id = (SELECT id FROM users WHERE email = 'ana@exemplo.com.br') ORDER BY tag`);
-    assert.deepEqual(sent.map((s) => s.tag), ['[POA][CALC] - Salvou cálculo', '[POA][CALC] - Usou poder', '[POA][CALC] - Usou precisão']);
+    assert.deepEqual([...new Set(created)], ['Lead - Calculadora Amostral']);
   });
 
   await test('sair encerra a sessão no servidor', async () => {

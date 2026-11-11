@@ -48,7 +48,7 @@ O teste de integração usa `embedded-postgres`, que fica fora do `package.json`
    - criar o app a partir deste repositório, tipo **Dockerfile**, porta 3000, domínios `https://calculoamostral.com.br` e `https://www.calculoamostral.com.br` (redirecionar www para o principal);
    - preencher as variáveis do `.env.example`;
    - health check em `/healthz`.
-5. **ActiveCampaign:** criar o campo personalizado "Calculadora: aceite de marketing" e colocar o id em `AC_MARKETING_FIELD_ID`. O site cria as tags `[POA][CALC] …` sozinho na primeira vez. Ele nunca inscreve em lista, nunca adiciona a automação e nunca envia e-mail.
+5. **ActiveCampaign:** com `AC_ENABLED=true` e `AC_API_KEY`, cada novo cadastro vira contato (nome e e-mail), entra na lista Leads (`AC_LIST_ID=31`) e recebe a tag `Lead - Calculadora Amostral` (criada sozinha na primeira vez). Antes de trocar a lista, confira se nenhuma automação ativa dispara por inscrição nela.
 
 ## Limites e segurança
 

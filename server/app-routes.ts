@@ -5,7 +5,6 @@ import { q, one } from './db';
 import { config } from './config';
 import { requireUser, type AuthedRequest } from './auth';
 import { SlidingLimiter } from './security';
-import { enqueueTagOnce } from './activecampaign';
 
 const calcLimiter = new SlidingLimiter(config.calcPerMinute, 60_000);
 
@@ -39,7 +38,6 @@ export function registerAppRoutes(app: Express) {
         const tool = p.startsWith('/api/power') ? 'poder' : 'precisao';
         const testType = String(req.body?.testType ?? req.body?.procedureType ?? '').slice(0, 64);
         q(`INSERT INTO calc_events (user_id, tool, test_type) VALUES ($1, $2, $3)`, [req.user!.id, tool, testType]).catch(() => {});
-        enqueueTagOnce(req.user!.id, tool === 'poder' ? config.acTagUsedPower : config.acTagUsedPrecision).catch(() => {});
       }
       res.status(r.status).json(r.data);
     });
@@ -66,7 +64,6 @@ export function registerAppRoutes(app: Express) {
         `INSERT INTO calc_history (user_id, tool, payload) VALUES ($1, $2, $3) RETURNING id, created_at`,
         [req.user!.id, tool, JSON.stringify(payload)],
       );
-      enqueueTagOnce(req.user!.id, config.acTagSaved).catch(() => {});
       res.status(201).json({ ...payload, id: row.id, userId: req.user!.id, createdAt: row.created_at });
     });
 

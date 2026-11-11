@@ -47,10 +47,9 @@ export const config = {
   acApiUrl: (env.AC_API_URL || '').replace(/\/+$/, ''),
   acApiKey: env.AC_API_KEY || '',
   acEnabled: bool(env.AC_ENABLED, true),
-  acTagSignup: env.AC_TAG_SIGNUP || '[POA][CALC] - Cadastro',
-  acTagUsedPower: env.AC_TAG_USED_POWER || '[POA][CALC] - Usou poder',
-  acTagUsedPrecision: env.AC_TAG_USED_PRECISION || '[POA][CALC] - Usou precisão',
-  acTagSaved: env.AC_TAG_SAVED || '[POA][CALC] - Salvou cálculo',
+  acTagSignup: env.AC_TAG_SIGNUP || 'Lead - Calculadora Amostral',
+  // Lista "Leads" (id 31). Nenhuma automação ativa dispara por inscrição nela (conferido em 11/11/2026).
+  acListId: (env.AC_LIST_ID ?? '31').trim(),
   acMarketingFieldId: env.AC_MARKETING_FIELD_ID || '',
 
   // Login

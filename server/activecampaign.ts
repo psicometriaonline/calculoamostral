@@ -84,6 +84,9 @@ async function process(row: { id: string; user_id: string; action: string; paylo
       fields.push({ field: config.acMarketingFieldId, value: `Sim (${String(row.payload.marketingAt ?? '').slice(0, 10)})` });
     }
     const contactId = await ensureContact(row.user_id, fields, true);
+    if (config.acListId) {
+      await ac('POST', '/contactLists', { contactList: { list: config.acListId, contact: contactId, status: 1 } });
+    }
     await ac('POST', '/contactTags', { contactTag: { contact: contactId, tag: await tagId(config.acTagSignup) } });
   } else if (row.action === 'tag') {
     const contactId = await ensureContact(row.user_id);
